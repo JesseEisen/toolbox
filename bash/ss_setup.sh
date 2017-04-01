@@ -20,10 +20,10 @@ cat  <<EOF > /etc/shadowsocks.json
 	"local_address": "127.0.0.1",
 	"local_port":1080,
 	"port_password": {
-		"8388": "boom123456",
-		"8382": "TxVD980Xv",
-		"8383": "foobar3",
-		"8384": "foobar4"
+		"8388": "xxxx",
+		"8382": "xxxx",
+		"8383": "xxxx",
+		"8384": "xxxx"
 	},
 	"timeout":300,
 	"method":"aes-256-cfb",
