@@ -1,12 +1,12 @@
 #! /usr/bin/env bash
 
-if [ $1 = ubuntu ]; then
+if [ "$1" = ubuntu ]; then
 	apt-get update
 	echo y|apt-get install python-pip
 	pip install shadowsocks
 fi
 
-if [ $1 = centos ]; then
+if [ "$1" = centos ]; then
 	yum install python-setuptools && easy_install pip
 	pip install shadowsocks
 fi

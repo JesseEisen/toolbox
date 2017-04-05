@@ -39,16 +39,16 @@ message_title () {
 }
 
 check_install () {
-    type -P $1 &>/dev/null && echo -e  "- Installed - ${GREEN} Ok ${RS} - $1" || echo -e  "- Install - ${RED} No ${RS} - $1"
+    type -P "$1" &>/dev/null && echo -e  "- Installed - ${GREEN} Ok ${RS} - $1" || echo -e  "- Install - ${RED} No ${RS} - $1"
 }
 
 Alread_install() {
 	echo -e "${RED}"
 	echo -e "############   $1  is installed  #############"
-	echo -e ""${RS}
+	echo -e "${RS}"
 }
 
-if [ $1  = ubuntu ]; then
+if [ "$1"  = ubuntu ]; then
 	pkg_manager="apt-get"
 else
 	pkg_manager="yum"
