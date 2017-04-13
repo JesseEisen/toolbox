@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+if [ -e "$1" ] ; then
+	echo "file exist!"
+	exit
+fi
+
+echo > "$1"
+echo "//" >> "$1"
+echo "// ""$1" >> "$1"
+echo "//" >> "$1"
+echo "// Copyright (c) 2017 JesseChen <lkchan0719@gmail.com>" >> "$1"
+echo "//" >> "$1"
+echo >> "$1"
+
+vim +8 "$1"
