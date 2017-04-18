@@ -1,0 +1,120 @@
+#!/usr/bin/env bash
+
+
+REMOTE=git@github.com:JesseEisen/easyMan.git
+CONFIG="$HOME/.mad/mad.conf"
+MAD_CONFIG=${MAD_CONFIG:-$CONFIG}
+MAD_PATH="$HOME/.mad/share"
+
+
+list_pages() {
+	local path="$MAD_PATH"
+
+	echo
+	printf "	\033[1mmad pages:\033[0m\n"
+	echo
+	test ! -z $path \
+		&& test -d $path \
+		&& find $path -type f \
+		| xargs -n1 basename \
+		| grep -iv 'readme*' \
+		| grep '.md$' \
+		| perl -pe 's|^(.*)\.md$|	\1|;'
+	echo
+}
+
+display() {
+	IFS=":"
+	local page=$1
+	local paths=".:$MAD_PATH"
+	
+	for path in $paths; do
+		local file=$path/$page
+		local ext=$path/$page.md
+		[[ -f "$file" ]] && display_file $file
+		[[ -f "$ext" ]] && display_file $ext
+	done
+	
+	echo
+	echo " Failed to locate '$page'"
+	echo 
+	echo "	MAD_PATH=\"$paths\""
+	echo
+	exit 1
+}
+
+get() {
+	grep "$1" "$MAD_CONFIG" | awk '{print $2}'	
+}
+
+install_all_remote() {
+	local path=$HOME/.mad/share
+	echo
+	echo "... cloning repo"
+	cd /tmp && rm -rf mad-pages
+	git clone --depth 1 $REMOTE mad-pages
+	cd mad-pages
+	for page in *.md; do
+		echo " ... installing $page"
+		cp -if $page $path/$page
+	done
+	echo "  ... complete"
+	echo 
+}
+
+#
+# update local git repo, i.e. ~/.mad/share/
+# 
+
+update_local() {
+	echo "git pull remote repo..."
+	git pull
+	echo "Complete!"
+}
+
+
+display_file() {
+	local heading=$(get heading)
+	local code=$(get code)
+	local strong=$(get strong)
+	local em=$(get em)
+
+	< "$1" perl -pe "
+		s|^#+ *(.+)|\e[$heading\1\e[0m|g; \
+		s|\`(.+?)\`|\e[$code\1\e[0m|g; \
+		s|\*\*(.+?)\*\*|\e[$strong\1\e[0m|g; \
+		s|__(.+?)__|\e[$strong\1\e[0m|g; \
+		s|\^(.+?)\^|\e[$em\1\e[0m|g; \
+		s|    (.+)|    \e[$code\1\e[0m|g; \
+		s|<(.+?)>|<\1>|g; \
+		s|^|  |;" \
+	  | less -R
+	exit
+	
+}
+
+display_mad_usage() {
+	display_file ~/.mad/share/mad.md
+	exit
+}
+
+[[ -z "$1" ]] && display_mad_usage
+
+
+case $1 in 
+	-U|--update)
+		install_all_remote
+		;;
+	-u|--update-self)
+		update_local
+		;;
+	-l|--list)
+		list_pages
+		;;
+	-h|--help)
+		display_mad_usage 
+		;;
+	*)
+		display $1
+		;;
+esac
