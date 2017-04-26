@@ -10,7 +10,7 @@
 #include <string.h>
 
 char **
-split(char *raw, const char *delim, int *len){
+split(char *raw, const char *delim){
     char *token, *saveptr;
     char **res;
     int i = 0;
@@ -24,7 +24,7 @@ split(char *raw, const char *delim, int *len){
         res = realloc(res, sizeof(char *) * (i+1));
     }
 
-    *len = i;
+    res[i] = NULL;
     return res;
 }
 
@@ -32,11 +32,12 @@ int
 main(void){
     char str[] = "1,22,333,4444,55555";
     char **res;
-    int len, i;
+    int i = 0;
 
-    res = split(str,",",&len);
-    for(i = 0; i< len; i++){
+    res = split(str,",");
+    while(res[i] != NULL){
         printf("%s\n",res[i]);
+        i++;
     }
 
     free(res);

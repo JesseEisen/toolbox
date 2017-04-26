@@ -15,6 +15,12 @@
 #define BUFLEN   100
 #define M_SIZE   32
 
+
+/*
+ * test the string whether match the pattern,
+ * if matched, return the first result,
+ * else return NULL
+ */
 char *
 regex(char *string, char *pattern, int flags){
     int     result;
@@ -49,13 +55,50 @@ regex(char *string, char *pattern, int flags){
 }
 
 
+char ** 
+gregex(char *string, char *pattern, int cflags){
+    int         i = 0, len;
+    char        *p = string;
+    char        **res;
+    regex_t     re;
+    regmatch_t  match;
+
+    if(regcomp(&re, pattern, cflags) != 0) exit(1);
+
+    res = malloc(sizeof(char *));
+    while(regexec(&re, p, 1, &match, 0) == 0){
+        len = match.rm_eo - match.rm_so;
+        res[i] = malloc(len+1);
+        memcpy(res[i++], &p[match.rm_so],len);
+        *(res[i-1]+len) = '\0';
+        p += match.rm_eo;
+        res = realloc(res,sizeof(char *)*(i+1));
+    }
+    
+    res[i] = NULL;
+    regfree(&re);
+    return res;
+}
+
 int 
 main(void){
-    char *pattern = "([1-9][0-9]*)";
-    char *string = "123,\"hello\",456";
+    char *pattern = "[1-9][0-9]*";
+    char *string_pat = "(\"[a-z]+\")";
+    char *string_num = "([1-9][0-9]*)" "," "\"([^\"]*)\"";
+    char *string = "123,\"hello\",456,\"world\"";
+    char **res;
+    int i = 0;
 
-    printf("%s\n",regex(string, pattern, REG_EXTENDED));
+    res = gregex(string,pattern, REG_EXTENDED);
+    while(res[i] != NULL){
+        printf("%s\n",res[i]);
+        i++;
+    }
 
+    int j;
+    for(j = 0; j < i; j++){
+        free(res[j]);
+    }
+    free(res);
     return 0;
-
 }
