@@ -116,4 +116,4 @@ int main(int argc, char **argv){
 	printf("At index of %d\n",BM("gooogle", "gle"));
 
 	return 0;
-}
+
