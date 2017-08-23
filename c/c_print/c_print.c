@@ -51,6 +51,7 @@ int c_print(int code,const char *fmt, ...)
 
     size = vprintf(output,ap);
     if(output) free(output);
+    va_end(ap);
 
     return size;
 }
